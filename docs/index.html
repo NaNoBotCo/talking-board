@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="A parlour talking board. Bots take the empty seats, a lens rides the planchette, and a notebook reads what comes through. For entertainment.">
+<meta name="google" content="notranslate">
+<link rel="canonical" href="https://nanobotco.github.io/talking-board/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nanobotco.github.io/talking-board/">
+<meta property="og:title" content="Talking Board · กระดานวิญญาณ">
+<meta property="og:description" content="A parlour talking board. Bots take the empty seats, a lens rides the planchette, and a notebook reads what comes through. For entertainment. กระดานวิญญาณในห้องรับแขก บอทนั่งแทนที่ว่าง แผ่นชี้มีเลนส์ขยาย สมุดจดคำที่ได้รับ เพื่อความบันเทิง">
+<meta property="og:image" content="https://nanobotco.github.io/talking-board/card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://nanobotco.github.io/talking-board/card.png">
+<meta name="theme-color" content="#150e0a">
+<title>Talking Board</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chonburi&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Sarabun:wght@400;600&family=Sriracha&display=swap">
+<style>
+:root{
+  --ground:#c9b58e; --ground-2:#a88f63; --ink:#2b1a0e; --muted:#6a5234;
+  --brass-hi:#efd48e; --brass:#bb9446; --brass-lo:#6f5118; --engrave:#2b1c06;
+  --ivory:#f2e6c9; --ivory-edge:#cdb98f;
+  --paper:#f3e8cf; --rule:#b3c1d3; --margin:#cf8f89; --pen:#2c2142;
+  --wax:#8e2b1f; --glow:rgba(255,200,125,.5); --shadow:rgba(45,24,8,.42);
+  --focus:#1f5f8b;
+  --fell:"IM Fell English", "Sarabun", Georgia, serif;
+  --fell-sc:"IM Fell English SC", "IM Fell English", "Sarabun", Georgia, serif;
+  --hand:"Sriracha", "Sarabun", "Comic Sans MS", cursive;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#150e0a; --ground-2:#2a1b12; --ink:#ecdcbf; --muted:#a88f6c;
+    --paper:#e6d8b8; --glow:rgba(255,160,70,.2); --shadow:rgba(0,0,0,.7);
+    --wax:#c24a3b; --focus:#8cc4ee; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#150e0a; --ground-2:#2a1b12; --ink:#ecdcbf; --muted:#a88f6c;
+  --paper:#e6d8b8; --glow:rgba(255,160,70,.2); --shadow:rgba(0,0,0,.7);
+  --wax:#c24a3b; --focus:#8cc4ee; color-scheme: dark;
+}
+html,body{min-height:100%}
+body{
+  margin:0; padding-inline:16px; padding-block:18px 48px;
+  color:var(--ink); font-family:var(--fell); font-size:16px; line-height:1.45;
+  background:
+    radial-gradient(ellipse 75% 55% at 45% 30%, var(--glow), transparent 72%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.035) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.03) 0 1px, transparent 1px 4px),
+    var(--ground);
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 60% 45% at 45% 32%, var(--glow), transparent 70%);
+  opacity:.5; animation:flicker 5.5s infinite ease-in-out;
+}
+@keyframes flicker{0%,100%{opacity:.45}23%{opacity:.62}41%{opacity:.4}58%{opacity:.58}77%{opacity:.48}}
+@media (prefers-reduced-motion: reduce){ body::before{animation:none} }
+
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+button{font:inherit; color:inherit; cursor:pointer}
+
+.top{max-width:1360px; margin:0 auto 14px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.brand h1{margin:0; font-family:var(--fell-sc); font-weight:400; font-size:clamp(28px,4vw,40px); letter-spacing:.06em; line-height:1.1; text-wrap:balance}
+.brand h1 .th{font-family:"Chonburi","Sarabun",serif; font-size:.62em; letter-spacing:0; color:var(--muted); margin-left:.5em}
+.brand p{margin:2px 0 0; color:var(--muted); font-style:italic}
+.lang{display:flex; gap:6px}
+.lang button{
+  border:1px solid var(--brass-lo); border-radius:4px; padding:4px 12px; font-family:var(--fell-sc);
+  background:linear-gradient(var(--brass-hi),var(--brass)); color:var(--engrave);
+  box-shadow:0 2px 0 var(--brass-lo); text-shadow:0 1px 0 rgba(255,244,210,.5);
+}
+.lang button[aria-pressed="true"]{background:var(--ivory); box-shadow:inset 0 2px 3px rgba(0,0,0,.3)}
+
+.table{max-width:1360px; margin:0 auto; display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:24px; align-items:start}
+@media (max-width:940px){ .table{grid-template-columns:minmax(0,1fr)} }
+.left{display:flex; flex-direction:column; gap:14px; min-width:0}
+
+.board-wrap{position:relative}
+#board{
+  display:block; width:100%; height:auto; aspect-ratio:1000/720; max-width:100%;
+  border-radius:4.4% / 6.1%; touch-action:none; cursor:grab;
+  box-shadow:0 22px 44px var(--shadow), 0 5px 10px var(--shadow);
+}
+#board.held{cursor:grabbing}
+.hint{
+  margin:8px 0 0; text-align:center; color:var(--muted); font-style:italic; font-size:14px;
+  transition:opacity .6s;
+}
+.hint.gone{opacity:0}
+
+/* seats — place cards */
+.seats{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(122px,1fr)); gap:10px}
+.seat{
+  position:relative; background:var(--ivory); color:#2b1a0e; border:1px solid var(--ivory-edge);
+  border-radius:6px; padding:8px 10px 9px; min-height:74px;
+  box-shadow:0 3px 8px var(--shadow); display:flex; flex-direction:column; gap:1px;
+}
+.seat:nth-child(odd){transform:rotate(-.8deg)}
+.seat:nth-child(even){transform:rotate(.7deg)}
+.seat .no{font-family:var(--fell-sc); font-size:12px; letter-spacing:.14em; color:#7a6243; display:flex; justify-content:space-between; align-items:center}
+.seat .dot{width:11px; height:11px; border-radius:50%; box-shadow:inset 0 -1px 2px rgba(0,0,0,.35)}
+.seat .who{font-size:17px; line-height:1.2; overflow-wrap:anywhere}
+.seat .kind{font-size:12px; font-style:italic; color:#7a6243}
+.seat .buf{font-family:var(--hand); font-size:13px; color:#2c2142; letter-spacing:.12em; min-height:1em; overflow-wrap:anywhere}
+.seat.bot{background:repeating-linear-gradient(135deg, #ece0c2 0 6px, #e6d8b6 6px 12px)}
+.seat.you{border-color:var(--brass); box-shadow:0 0 0 2px var(--brass), 0 3px 8px var(--shadow)}
+.seat button, .watch button{
+  margin-top:4px; align-self:flex-start; font-size:12px; padding:1px 8px; border-radius:3px;
+  border:1px solid #9f8a66; background:#fbf4e3; color:#2b1a0e;
+}
+.watch{margin:0; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center}
+.watch:empty{display:none}
+.watch .p{display:inline-flex; gap:6px; align-items:center}
+.watch button{margin:0}
+
+/* brass plate */
+.plate{
+  position:relative; border-radius:10px; padding:14px 22px; color:var(--engrave);
+  background:linear-gradient(180deg,var(--brass-hi),var(--brass) 48%,var(--brass-lo));
+  box-shadow:inset 0 2px 0 rgba(255,250,220,.45), inset 0 -2px 0 rgba(0,0,0,.25), 0 8px 18px var(--shadow);
+  text-shadow:0 1px 0 rgba(255,244,210,.5);
+  display:flex; flex-wrap:wrap; gap:14px 26px; align-items:center;
+}
+.plate::before,.plate::after{
+  content:""; position:absolute; top:8px; width:8px; height:8px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff3c4, #8a6a26 60%, #4d380c);
+}
+.plate::before{left:8px} .plate::after{right:8px}
+.ctl{display:flex; flex-direction:column; gap:4px; min-width:0}
+.ctl > .lbl{font-family:var(--fell-sc); font-size:13px; letter-spacing:.12em}
+.knobs{display:flex; gap:6px}
+.knobs button{
+  width:32px; height:32px; border-radius:50%; border:1px solid #3d2a08; font-family:var(--fell-sc); font-size:15px;
+  background:radial-gradient(circle at 35% 30%, #7a4a26, #3c200e 70%); color:#f0dcae; text-shadow:none;
+  box-shadow:0 2px 3px rgba(0,0,0,.4);
+}
+.knobs button[aria-checked="true"]{background:radial-gradient(circle at 35% 30%, #fffaf0, #e4d3ad 70%); color:#2b1a0e; box-shadow:inset 0 2px 3px rgba(0,0,0,.35)}
+.sens{display:flex; align-items:center; gap:8px; font-style:italic; font-size:13px}
+input[type=range]{-webkit-appearance:none; appearance:none; width:150px; max-width:40vw; height:8px; border-radius:6px; background:linear-gradient(#5a3f0c,#8d6a22); box-shadow:inset 0 1px 2px rgba(0,0,0,.6), 0 1px 0 rgba(255,244,210,.5)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fffaf0, #d8c190 60%, #8b6d2c); border:1px solid #4d380c; box-shadow:0 2px 3px rgba(0,0,0,.45)}
+input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fffaf0, #d8c190 60%, #8b6d2c); border:1px solid #4d380c}
+.gauge{display:flex; align-items:center; gap:8px}
+.gauge svg{width:92px; height:54px; overflow:visible}
+.gauge .needle{transform-origin:60px 60px; transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
+@media (prefers-reduced-motion: reduce){ .gauge .needle{transition:none} }
+.gauge .mw{font-family:var(--fell); font-style:italic; font-size:16px; min-width:6.5em}
+.grip{display:flex; flex-direction:column; gap:3px}
+.grip .bar{display:grid; grid-template-columns:3.6em 84px; align-items:center; gap:6px; font-size:12px; font-style:italic}
+.grip i{display:block; height:7px; border-radius:4px; background:linear-gradient(#5a3f0c,#8d6a22); box-shadow:inset 0 1px 2px rgba(0,0,0,.6), 0 1px 0 rgba(255,244,210,.5); overflow:hidden}
+.grip b{display:block; height:100%; width:50%; border-radius:4px; background:linear-gradient(#fffaf0,#d8c190); transition:width .6s}
+.gw{font-style:italic; font-size:14px}
+.switch{display:flex; align-items:center; gap:8px; font-size:14px}
+.btn{
+  border:1px solid #6d5a36; border-radius:4px; padding:6px 14px; background:linear-gradient(#fbf3de,#e5d4ae);
+  color:#2b1a0e; text-shadow:none; box-shadow:0 2px 0 #6d5a36;
+}
+.btn:active{transform:translateY(2px); box-shadow:none}
+.btn[aria-pressed="true"]{background:linear-gradient(#e5d4ae,#fbf3de); box-shadow:inset 0 2px 3px rgba(0,0,0,.3)}
+.btns{display:flex; flex-wrap:wrap; gap:10px}
+
+.ask{display:flex; gap:8px; flex-wrap:wrap}
+.ask input{
+  flex:1 1 220px; min-width:0; font:inherit; font-size:17px; padding:8px 12px; border-radius:4px;
+  border:1px solid var(--ivory-edge); background:var(--ivory); color:#2b1a0e; font-style:italic;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.18);
+}
+
+/* notebook */
+.notebook{
+  position:sticky; top:calc(env(safe-area-inset-top,0px) + 12px);
+  background-color:var(--paper); color:var(--pen); font-family:var(--hand);
+  background-image:
+    linear-gradient(90deg, transparent 44px, var(--margin) 44px 45px, transparent 45px),
+    repeating-linear-gradient(180deg, transparent 0 27px, var(--rule) 27px 28px);
+  background-position:0 10px;
+  border-radius:3px 10px 10px 3px; padding:10px 16px 20px 58px; line-height:28px;
+  box-shadow:0 14px 30px var(--shadow), inset 12px 0 18px -12px rgba(0,0,0,.35);
+}
+.notebook::before{
+  content:""; position:absolute; left:14px; top:18px; bottom:18px; width:14px;
+  background:radial-gradient(circle at 7px 7px, var(--ground) 0 5px, rgba(0,0,0,.25) 5.5px, transparent 6.5px) 0 0 / 14px 42px repeat-y;
+}
+.notebook h2{margin:0; font-family:var(--fell-sc); font-weight:400; font-size:20px; letter-spacing:.08em; line-height:28px}
+.nb-tools{display:flex; gap:12px; align-items:center; font-family:var(--fell); font-size:14px; line-height:28px; flex-wrap:wrap}
+.nb-tools button{background:none; border:0; padding:0; text-decoration:underline; text-underline-offset:3px; color:var(--pen)}
+.live{margin:0; min-height:56px}
+.live .lbl{font-family:var(--fell); font-style:italic; font-size:14px; color:#6a5a7a}
+.live .letters{font-size:20px; letter-spacing:.22em; overflow-wrap:anywhere}
+.asked{margin:0; font-size:15px; color:#6a5a7a}
+.asked:empty{display:none}
+.log{list-style:none; margin:0; padding:0; max-height:62vh; overflow:auto}
+@media (max-width:940px){ .notebook{position:relative; top:auto} .log{max-height:none} }
+.entry{padding-bottom:28px}
+.entry .meta{font-family:var(--fell); font-size:13px; color:#6a5a7a}
+.entry .q{margin:0; font-size:15px}
+.entry .reading{margin:0; font-size:23px; letter-spacing:.04em; overflow-wrap:anywhere}
+.entry .reading.none{font-size:16px; font-style:italic; color:#6a5a7a}
+.entry .raw{margin:0; font-size:14px; letter-spacing:.2em; overflow-wrap:anywhere}
+.entry .raw .n{opacity:.35}
+.entry .raw .sp{letter-spacing:.06em; border-bottom:1px solid currentColor}
+.entry .mood{margin:0; font-family:var(--fell); font-style:italic; font-size:14px; color:#4f4266}
+.stamp{display:inline-block; margin-left:6px; padding:0 6px; line-height:18px; border-radius:3px; font-family:var(--fell-sc); font-size:11px; letter-spacing:.1em; color:#fff3e8; background:var(--wax); transform:rotate(-4deg)}
+.empty{font-style:italic; color:#6a5a7a}
+.confirm{display:inline-flex; gap:10px; align-items:center}
+.confirm[hidden]{display:none!important}
+
+/* explainer tag */
+.explainer{max-width:1360px; margin:28px auto 0}
+.explainer summary{
+  list-style:none; display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  font-family:var(--fell-sc); letter-spacing:.08em; font-size:15px; color:var(--ink);
+}
+.explainer summary::-webkit-details-marker{display:none}
+.explainer summary .tag{
+  display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%;
+  background:var(--ivory); color:#2b1a0e; border:1px solid var(--ivory-edge); font-family:var(--fell); box-shadow:0 2px 4px var(--shadow)
+}
+.explainer .card{
+  margin-top:12px; background:var(--ivory); color:#2b1a0e; border-radius:6px; padding:18px 22px;
+  box-shadow:0 10px 24px var(--shadow); max-width:68ch;
+}
+.explainer h3{margin:0 0 6px; font-family:var(--fell-sc); font-weight:400; font-size:20px}
+.explainer p, .explainer li{font-size:16px}
+.explainer ul{padding-left:1.1em}
+.explainer [lang="th"]{font-family:"Sarabun",sans-serif; line-height:1.7}
+footer{max-width:1360px; margin:18px auto 0; color:var(--muted); font-style:italic; font-size:14px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <h1>Talking Board <span class="th" lang="th">กระดานวิญญาณ</span></h1>
+    <p data-t="sub">A parlour board for up to seven hands. Bots take the empty seats.</p>
+  </div>
+  <div class="lang" role="group" aria-label="Board language">
+    <button type="button" data-lang="en" aria-pressed="true">English</button>
+    <button type="button" data-lang="th" aria-pressed="false" lang="th">ไทย</button>
+  </div>
+</header>
+
+<main class="table">
+  <section class="left">
+    <div class="board-wrap">
+      <canvas id="board" tabindex="0" role="application" aria-label="Talking board. Press and drag to move the planchette; arrow keys also move it."></canvas>
+      <p class="hint" id="hint" data-t="hint">Press and hold on the board to rest your hand on the planchette.</p>
+    </div>
+
+    <ul class="seats" id="seats" aria-label="Seats"></ul>
+    <p class="watch" id="watch"></p>
+
+    <div class="plate">
+      <div class="ctl">
+        <span class="lbl" id="handsLbl" data-t="hands">Other hands</span>
+        <div class="knobs" id="knobs" role="radiogroup" aria-labelledby="handsLbl"></div>
+      </div>
+      <div class="ctl">
+        <label class="lbl" for="sens" data-t="sens">Sensitivity</label>
+        <div class="sens"><span data-t="sensLo">firm</span><input type="range" id="sens" min="1" max="10" step="1" value="5"><span data-t="sensHi">feather</span></div>
+      </div>
+      <div class="ctl">
+        <span class="lbl" data-t="mood">Mood</span>
+        <div class="gauge">
+          <svg viewBox="0 0 120 70" aria-hidden="true">
+            <path d="M12 60 A48 48 0 0 1 108 60" fill="none" stroke="#2b1c06" stroke-width="2"/>
+            <g stroke="#2b1c06" stroke-width="2">
+              <line x1="60" y1="60" x2="60" y2="16" transform="rotate(-72 60 60)" stroke-dasharray="0 38 6 0"/>
+              <line x1="60" y1="60" x2="60" y2="16" transform="rotate(-36 60 60)" stroke-dasharray="0 38 6 0"/>
+              <line x1="60" y1="60" x2="60" y2="16" stroke-dasharray="0 38 6 0"/>
+              <line x1="60" y1="60" x2="60" y2="16" transform="rotate(36 60 60)" stroke-dasharray="0 38 6 0"/>
+              <line x1="60" y1="60" x2="60" y2="16" transform="rotate(72 60 60)" stroke-dasharray="0 38 6 0"/>
+            </g>
+            <g class="needle" id="needle"><line x1="60" y1="60" x2="60" y2="20" stroke="#5b1a10" stroke-width="3" stroke-linecap="round"/></g>
+            <circle cx="60" cy="60" r="5" fill="#3c2708"/>
+          </svg>
+          <span class="mw" id="moodWord" aria-live="polite">still</span>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="lbl" data-t="grip">Your grip</span>
+        <div class="grip" aria-hidden="true">
+          <div class="bar"><span data-t="firmL">firm</span><i><b id="firmBar"></b></i></div>
+          <div class="bar"><span data-t="twitchL">twitch</span><i><b id="twitchBar"></b></i></div>
+        </div>
+        <span class="gw" id="gripWord" aria-live="polite"></span>
+      </div>
+      <div class="ctl">
+        <span class="lbl" data-t="company">Company</span>
+        <div class="btns">
+          <button type="button" class="btn mp" id="peopleBtn" aria-pressed="true" data-t="peopleOn" hidden>People and bots</button>
+          <button type="button" class="btn" id="liftBtn" aria-pressed="false" data-t="lift">Lift hands</button>
+          <button type="button" class="btn" id="endBtn" data-t="end">End message</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="ask" id="askForm" autocomplete="off">
+      <label class="sr" for="q" data-t="ask">Ask</label>
+      <input id="q" type="text" maxlength="120" placeholder="Ask the board a question (optional)">
+      <button type="submit" class="btn" data-t="ask">Ask</button>
+    </form>
+  </section>
+
+  <aside class="notebook" aria-labelledby="nbTitle">
+    <h2 id="nbTitle" data-t="log">Messages received</h2>
+    <div class="nb-tools">
+      <button type="button" id="copyBtn" data-t="copy">Copy</button>
+      <button type="button" id="clearBtn" data-t="clear">Clear</button>
+      <span class="confirm" id="confirm" hidden><span data-t="clearq">Clear every message?</span>
+        <button type="button" id="clearYes" data-t="clearYes">Clear</button>
+        <button type="button" id="clearNo" data-t="clearNo">Keep</button></span>
+    </div>
+    <p class="asked" id="asked"></p>
+    <p class="live"><span class="lbl" data-t="coming">Coming through</span><br><span class="letters" id="letters" aria-live="polite">…</span></p>
+    <ol class="log" id="log"></ol>
+  </aside>
+</main>
+
+<details class="explainer">
+  <summary><span class="tag">?</span><span data-t="how">How it moves</span></summary>
+  <div class="card" lang="en" id="explainEn">
+    <h3>How it moves</h3>
+    <p>Hands resting on a planchette make small movements their owners don't feel. Expect a letter and the hand drifts toward it. William Carpenter named this the <em>ideomotor effect</em> in 1852.</p>
+    <p>Each bot at the table is a small program with three pulls:</p>
+    <ul>
+      <li><strong>Drift</strong> — a slow, wandering force. It is an Ornstein–Uhlenbeck process: random, but tugged back toward zero, so it wanders without running away.</li>
+      <li><strong>Tremor</strong> — a shake of 8 to 11 beats a second, the rate of a resting hand.</li>
+      <li><strong>Expectation</strong> — a guess at the next letter of a word, and a pull toward it. When the planchette stops on a letter the bot did not expect, the bot looks for a word that fits the letters so far and follows that word instead.</li>
+    </ul>
+    <p>More hands, more pull. With six others at the table, your own hand gets outvoted.</p>
+    <p class="mp" hidden><strong>People.</strong> Anyone who has this page open at the same time sits down in a seat a bot held. Their finger pulls on your planchette, and yours on theirs; each of you watches your own board. <em>Sit out</em> sends a person to the rail and a bot takes the seat back. <em>Bots only</em> seats nobody but bots. One seat stays a bot however many people come.</p>
+    <p><strong>Your grip.</strong> While you hold the planchette, the board measures two things. <em>Twitch</em>: how far your pointer jitters around its own slow path, and how often it reverses. <em>Firmness</em>: how long you hold, how hard you pull, how seldom you reverse; a pen or touch screen adds pressure. A twitchy hand gets more smoothing and a looser idea of "stopped". A firm hand pulls harder and lands letters sooner. This browser keeps the measure for next time<span class="mp" hidden>, and other people's boards feel your firmness too</span>.</p>
+    <p><strong>Sensitivity</strong> sets how long, and how near, the lens has to rest on a letter before it counts. Feather counts letters the planchette slides over; firm waits for a stop.</p>
+    <p><strong>Mood</strong> reads the last four seconds of movement: circling, darting, pausing, jittering. The mood picks which words the bots expect. Under each message, the reading is the nearest words from that vocabulary to the letters that landed, allowing a missed or extra letter. Faded letters matched no word.</p>
+    <p><strong>A question</strong> steers the first word: <em>is, will, should…</em> leans to YES or NO; <em>who</em> to a name; <em>where</em> to a place; <em>when</em> to a number or a time.</p>
+    <p>The Thai board carries the 42 consonants in use. A Thai word is read from its consonants alone, so ร then ก reads รัก.</p>
+    <p>For entertainment.</p>
+  </div>
+  <div class="card" lang="th" id="explainTh" hidden>
+    <h3>มันขยับได้อย่างไร</h3>
+    <p>มือที่วางบนแผ่นชี้จะขยับเล็กๆ โดยเจ้าของไม่รู้สึกตัว ถ้าใจคาดว่าตัวอักษรไหนจะมา มือก็ค่อยๆ ไหลไปทางนั้นเอง วิลเลียม คาร์เพนเตอร์ ตั้งชื่อเรื่องนี้ว่า <em>ปรากฏการณ์ไอดีโอมอเตอร์</em> เมื่อปี ค.ศ. 1852</p>
+    <p>บอทแต่ละตัวที่ร่วมวงเป็นโปรแกรมเล็กๆ ที่ดึงแผ่นชี้สามแบบ</p>
+    <ul>
+      <li><strong>การลอย</strong> — แรงสุ่มที่ค่อยๆ เปลี่ยนทิศ แต่ถูกดึงกลับเข้าหาศูนย์เสมอ จึงเร่ร่อนได้โดยไม่หนีไปไกล (นักคณิตศาสตร์เรียกว่า กระบวนการ Ornstein–Uhlenbeck)</li>
+      <li><strong>อาการสั่น</strong> — สั่น 8 ถึง 11 ครั้งต่อวินาที เท่ากับมือคนที่วางพักไว้</li>
+      <li><strong>ความคาดหวัง</strong> — เดาตัวอักษรถัดไปของคำหนึ่ง แล้วดึงไปทางนั้น ถ้าแผ่นชี้ไปหยุดที่ตัวที่บอทไม่ได้คาด บอทจะหาคำใหม่ที่เข้ากับตัวที่ได้มาแล้ว และตามคำนั้นไปแทน</li>
+    </ul>
+    <p>ยิ่งมือมาก แรงดึงยิ่งมาก ถ้ามีอีกหกมือร่วมวง มือของคุณเองก็แพ้เสียงข้างมาก</p>
+    <p class="mp" hidden><strong>คน</strong> ใครที่เปิดหน้านี้อยู่พร้อมกันจะมานั่งแทนที่บอท นิ้วของเขาดึงแผ่นชี้ของคุณ นิ้วของคุณก็ดึงของเขา แต่ละคนดูกระดานของตัวเอง กด <em>ให้พัก</em> แล้วคนนั้นจะไปยืนดูข้างวง บอทกลับมานั่งแทน กด <em>บอทอย่างเดียว</em> ก็เล่นกับบอทล้วน คนมากันเท่าไรก็ตาม จะมีบอทนั่งอยู่อย่างน้อยหนึ่งที่เสมอ</p>
+    <p><strong>มือของคุณ</strong> ระหว่างที่คุณจับแผ่นชี้ กระดานวัดสองอย่าง <em>อาการสั่น</em> คือตัวชี้ส่ายออกจากทางเดินช้าๆ ของมันเองมากแค่ไหน และกลับทิศบ่อยแค่ไหน <em>ความแน่น</em> คือจับนานแค่ไหน ดึงแรงแค่ไหน กลับทิศน้อยแค่ไหน ถ้าใช้ปากกาหรือจอสัมผัสก็นับแรงกดด้วย มือที่สั่นจะได้การกรองให้นิ่งขึ้น และกระดานยอมนับว่า "หยุด" แม้มือยังสั่นอยู่ มือที่แน่นดึงแรงกว่า และได้ตัวอักษรเร็วกว่า เบราว์เซอร์นี้จำค่าไว้ใช้ครั้งหน้า<span class="mp" hidden> และกระดานของคนอื่นก็รู้สึกถึงความแน่นของมือคุณด้วย</span></p>
+    <p><strong>ความไว</strong> คือแผ่นชี้ต้องหยุดนานแค่ไหน และใกล้แค่ไหน ตัวอักษรจึงจะนับ ด้าน "เบา" นับแม้แผ่นชี้แค่ไถลผ่าน ด้าน "หนัก" ต้องรอให้หยุดนิ่ง</p>
+    <p><strong>อารมณ์</strong> อ่านจากท่าทางของแผ่นชี้ในสี่วินาทีล่าสุด ว่าวน พุ่ง หยุด หรือสั่น อารมณ์เป็นตัวเลือกว่าบอทจะคาดหวังคำจากกลุ่มไหน คำอ่านใต้ข้อความแต่ละอัน คือคำในกลุ่มนั้นที่ใกล้กับตัวอักษรที่ได้มากที่สุด ยอมให้ขาดหรือเกินได้หนึ่งตัว ตัวอักษรสีจางคือตัวที่ไม่เข้าคำไหน</p>
+    <p><strong>คำถาม</strong> ช่วยนำคำแรก ถามว่า <em>…ไหม</em> จะเอนไปทาง ใช่ หรือ ไม่ ถาม <em>ใคร</em> ได้ชื่อคน ถาม <em>ที่ไหน</em> ได้สถานที่ ถาม <em>เมื่อไร</em> ได้ตัวเลขหรือเวลา</p>
+    <p>กระดานภาษาไทยมีพยัญชนะที่ยังใช้อยู่ 42 ตัว คำไทยอ่านจากพยัญชนะอย่างเดียว เช่น ร แล้ว ก อ่านว่า รัก</p>
+    <p>เพื่อความบันเทิงเท่านั้น</p>
+  </div>
+</details>
+<footer data-t="foot">For entertainment.</footer>
+
+<script>
+(() => {
+'use strict';
+const W = 1000, H = 720, TAU = Math.PI * 2;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, u) => a + (b - a) * u;
+function gauss() { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v); }
+
+/* ---------------- words ---------------- */
+const THC = Array.from('กขคฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ');
+const THSET = new Set(THC);
+const THD = Array.from('๐๑๒๓๔๕๖๗๘๙');
+const RAW = {
+  en: {
+    core: 'HELLO HERE NOW SOON LATER HOME NAME ONE TWO THREE LOVE HELP WAIT LOOK LISTEN SEE KNOW TRUE BACK AGAIN DOOR ROOM HOUSE LIGHT DARK COLD WARM WATER FIRE TREE RIVER STAR MOON SUN ASK YOU ME WE FRIEND',
+    gentle: 'LOVE PEACE REST SAFE CALM HOME MOTHER FATHER GARDEN SLEEP DREAM KIND SMILE WARM GIFT SING THANKS TEA BREAD HANDS',
+    restless: 'RUN LEAVE COLD LOST FIND KEY LOCKED STAIRS BEHIND NOISE STORM HURRY OPEN CLOSE LATE SHUT TRAIN DOOR WAKE',
+    hasty: 'GO NOW STOP MOVE TELL WRITE CALL SEND QUICK TODAY TONIGHT FAST SOON READ SIGN MAP ROAD LETTER',
+    circler: 'MAYBE WHY PERHAPS RIDDLE CIRCLE ROUND AGAIN MIRROR ECHO SEVEN NINE TWICE LOOP SPIRAL TIDE WHEEL CLOCK SHADOW',
+    shy: 'HI SMALL QUIET SORRY HUSH SOFT HIDE ALONE PLEASE CAT BIRD MOUSE LEAF CANDLE WHISPER KIND FRIEND',
+    names: 'ANNE ROSE JACK MAE NOI LEK EDDIE MARY SAM OTIS IDA RUTH',
+    places: 'HOME NORTH SOUTH EAST WEST RIVER GARDEN STAIRS DOOR ATTIC CELLAR KITCHEN TEMPLE MARKET',
+    when: 'SOON LATER TONIGHT TODAY SPRING WINTER MONDAY FRIDAY MORNING',
+    maybe: 'MAYBE'
+  },
+  th: {
+    core: 'สวัสดี บ้าน ชื่อ ใคร ที่นี่ ตอนนี้ พรุ่งนี้ รัก ช่วย รอ ฟัง จริง กลับ ประตู ห้อง แสง มืด หนาว อุ่น เหนือ ต้นไม้ แม่น้ำ ดาว พระจันทร์ ตะวัน ถาม หนึ่ง สอง สาม วัด พระ เพื่อน',
+    gentle: 'รัก สงบ พักผ่อน ปลอดภัย พ่อ สวน หลับ ฝันดี ใจดี ยิ้ม อบอุ่น ของขวัญ ร้องเพลง ขอบคุณ ข้าว มือ บุญ เมตตา',
+    restless: 'วิ่ง ออกไป หลงทาง ตามหา กุญแจ ล็อก บันได ข้างหลัง เสียง พายุ รีบ เปิด ปิด สาย รถไฟ ตื่น หนี',
+    hasty: 'ไปเลย หยุด บอก เขียน โทร ส่ง เร็ว วันนี้ คืนนี้ อ่าน ถนน แผนที่ ทันที จดหมาย',
+    circler: 'อาจจะ ทำไม ปริศนา วงกลม อีกครั้ง กระจก เงา นาฬิกา เจ็ด เก้า สองครั้ง วนเวียน ล้อ น้ำขึ้น',
+    shy: 'เล็ก เงียบ ขอโทษ อาย นุ่ม ซ่อน คนเดียว เพื่อน ได้โปรด แมว นก หนู ใบไม้ เทียน กระซิบ',
+    names: 'สมชาย มาลี นิด แดง บุญมี จันทร์ ทองดี สมศรี',
+    places: 'บ้าน วัด ตลาด แม่น้ำ ห้องครัว ใต้ถุน ประตู ภูเขา ทุ่งนา',
+    when: 'พรุ่งนี้ คืนนี้ วันนี้ เร็วๆนี้ ปีหน้า หน้าฝน ตอนเช้า',
+    maybe: 'อาจจะ'
+  }
+};
+const skel = (w, lang) => lang === 'en' ? w.toUpperCase().replace(/[^A-Z]/g, '') : Array.from(w).filter(c => THSET.has(c)).join('');
+const LX = {};
+for (const lang of ['en', 'th']) {
+  const g = {}, all = new Map();
+  for (const [k, str] of Object.entries(RAW[lang])) {
+    g[k] = str.split(/\s+/).map(w => ({ w, s: skel(w, lang) })).filter(e => e.s.length >= 2);
+    for (const e of g[k]) all.set(e.w, e);
+  }
+  g.all = [...all.values()];
+  g.maybe = g.maybe[0];
+  LX[lang] = g;
+}
+
+/* ---------------- strings ---------------- */
+const MOODS = ['shy', 'gentle', 'circler', 'restless', 'hasty'];
+const BOTS = {
+  en: ['Agnes', 'Wilbur', 'Clara', 'Otto', 'Hazel', 'Rufus'],
+  th: ['ป้าสมศรี', 'ลุงบุญมี', 'น้าแดง', 'พี่นิด', 'ยายมาลี', 'ตาทองดี']
+};
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+const T = {
+  en: {
+    sub: 'A parlour board for up to seven hands. Bots take the empty seats.',
+    hint: 'Press and hold on the board to rest your hand on the planchette.',
+    hands: 'Other hands', sens: 'Sensitivity', sensLo: 'firm', sensHi: 'feather', mood: 'Mood', company: 'Company',
+    peopleOn: 'People and bots', peopleOff: 'Bots only', lift: 'Lift hands', place: 'Place hands', end: 'End message',
+    ask: 'Ask', qph: 'Ask the board a question (optional)', log: 'Messages received', coming: 'Coming through',
+    copy: 'Copy', copied: 'Copied', clear: 'Clear', clearq: 'Clear every message?', clearYes: 'Clear', clearNo: 'Keep',
+    empty: 'Nothing yet. Rest a finger on the board and wait.', example: 'example', how: 'How it moves', foot: 'For entertainment.',
+    asked: 'Asked', seat: 'Seat', you: 'you', youName: 'You', bot: 'bot', person: 'person', sitOut: 'Sit out', dealIn: 'Deal in',
+    rail: 'At the rail:', waiting: 'waiting for a seat', sittingOut: 'sitting out', someone: 'Guest',
+    grip: 'Your grip', firmL: 'firm', twitchL: 'twitch',
+    gripWord: (f, t) => `${f < .35 ? 'light' : f < .65 ? 'even' : 'firm'}, ${t < .3 ? 'steady' : t < .6 ? 'a little shaky' : 'twitchy'}`,
+    moods: { still: 'still', gentle: 'gentle', restless: 'restless', hasty: 'urgent', circler: 'circling', shy: 'shy' },
+    moodLine: { still: 'a still one', gentle: 'a gentle one', restless: 'a restless one', hasty: 'an urgent one', circler: 'one that circles', shy: 'a shy one' },
+    noWords: 'no clear words', YES: 'YES', NO: 'NO', BYE: 'GOOD BYE', boardTitle: 'TALKING  BOARD',
+    meta: (h, p) => `${h} other ${h === 1 ? 'hand' : 'hands'}${p ? ` · ${p} ${p === 1 ? 'person' : 'people'}` : ''}`,
+    style: (c, st) => `${c ? `circled ${c === 1 ? 'once' : c === 2 ? 'twice' : c + ' times'} · ` : ''}still ${st}% of the time`
+  },
+  th: {
+    sub: 'กระดานในห้องรับแขก เล่นได้ถึงเจ็ดมือ ที่ว่างมีบอทนั่งแทน',
+    hint: 'กดค้างบนกระดาน เพื่อวางมือบนแผ่นชี้',
+    hands: 'มืออื่นๆ', sens: 'ความไว', sensLo: 'หนัก', sensHi: 'เบา', mood: 'อารมณ์', company: 'ร่วมวง',
+    peopleOn: 'คนและบอท', peopleOff: 'บอทอย่างเดียว', lift: 'ยกมือ', place: 'วางมือ', end: 'จบข้อความ',
+    ask: 'ถาม', qph: 'ถามกระดาน (ไม่ถามก็ได้)', log: 'ข้อความที่ได้รับ', coming: 'กำลังมา',
+    copy: 'คัดลอก', copied: 'คัดลอกแล้ว', clear: 'ล้าง', clearq: 'ล้างข้อความทั้งหมดไหม', clearYes: 'ล้างเลย', clearNo: 'เก็บไว้',
+    empty: 'ยังไม่มีอะไร วางนิ้วบนกระดานแล้วรอ', example: 'ตัวอย่าง', how: 'มันขยับได้อย่างไร', foot: 'เพื่อความบันเทิงเท่านั้น',
+    asked: 'ถามว่า', seat: 'ที่นั่ง', you: 'คุณ', youName: 'คุณ', bot: 'บอท', person: 'คน', sitOut: 'ให้พัก', dealIn: 'เชิญเล่น',
+    rail: 'ยืนดูข้างวง:', waiting: 'รอที่นั่ง', sittingOut: 'พักอยู่', someone: 'แขก',
+    grip: 'มือของคุณ', firmL: 'แน่น', twitchL: 'สั่น',
+    gripWord: (f, t) => `${f < .35 ? 'จับเบา' : f < .65 ? 'จับพอดี' : 'จับแน่น'} · ${t < .3 ? 'นิ่ง' : t < .6 ? 'สั่นนิดๆ' : 'สั่นมาก'}`,
+    moods: { still: 'นิ่ง', gentle: 'อ่อนโยน', restless: 'กระสับกระส่าย', hasty: 'รีบร้อน', circler: 'วนเวียน', shy: 'ขี้อาย' },
+    moodLine: { still: 'ดวงที่นิ่งเงียบ', gentle: 'ดวงที่อ่อนโยน', restless: 'ดวงที่กระสับกระส่าย', hasty: 'ดวงที่รีบร้อน', circler: 'ดวงที่วนเวียน', shy: 'ดวงที่ขี้อาย' },
+    noWords: 'อ่านไม่ออกเป็นคำ', YES: 'ใช่', NO: 'ไม่', BYE: 'ลาก่อน', boardTitle: 'กระดานวิญญาณ',
+    meta: (h, p) => `มืออื่น ${h} มือ${p ? ` · คน ${p} คน` : ''}`,
+    style: (c, st) => `${c ? `วน ${c} รอบ · ` : ''}นิ่ง ${st}% ของเวลา`
+  }
+};
+
+/* ---------------- state ---------------- */
+const S = {
+  lang: store.get('tb-lang', /^th/i.test(navigator.language || '') ? 'th' : 'en'),
+  hands: clamp(store.get('tb-hands', 3) | 0, 1, 6),
+  sens: clamp(store.get('tb-sens', 5) | 0, 1, 10),
+  people: store.get('tb-people', true) !== false,
+  lifted: REDUCED,
+  mood: 'still',
+  finger: null, grab: null, keys: new Set(),
+  hue: Math.floor(Math.random() * 360),
+  qText: '',
+  log: store.get('tb-log', []),
+};
+if (S.lang !== 'th') S.lang = 'en';
+if (!Array.isArray(S.log)) S.log = [];
+const excluded = new Set();
+const grip = (() => { const g = store.get('tb-grip', null); return g && isFinite(g.firm) && isFinite(g.twitch) ? { firm: clamp(g.firm, 0, 1), twitch: clamp(g.twitch, 0, 1) } : { firm: .5, twitch: .3 }; })();
+const gs = { slow: null, jit: 0, flip: 0, hold: 0, pull: 0, pv: null, prev: null, pressure: null, saved: 0 };
+function gripTick(dt, now) {
+  if (!S.raw) { gs.slow = null; gs.prev = null; gs.pv = null; gs.hold = 0; return; }
+  const r = S.raw;
+  if (!S.finger || !S.fingerFromPointer) { S.finger = { x: r.x, y: r.y }; S.fingerFromPointer = true; }
+  const a = 1 - Math.exp(-dt / lerp(.02, .2, grip.twitch));
+  S.finger.x += (r.x - S.finger.x) * a; S.finger.y += (r.y - S.finger.y) * a;
+  if (!gs.slow) gs.slow = { x: r.x, y: r.y };
+  const b = 1 - Math.exp(-dt / .15);
+  gs.slow.x += (r.x - gs.slow.x) * b; gs.slow.y += (r.y - gs.slow.y) * b;
+  const dev = Math.hypot(r.x - gs.slow.x, r.y - gs.slow.y);
+  gs.jit = gs.jit * .96 + dev * dev * .04;
+  if (gs.prev && dt > 0) {
+    const vx = (r.x - gs.prev.x) / dt, vy = (r.y - gs.prev.y) / dt;
+    let flip = 0;
+    if (Math.hypot(vx, vy) > 40) { if (gs.pv && vx * gs.pv.x + vy * gs.pv.y < 0) flip = 1; gs.pv = { x: vx, y: vy }; }
+    gs.flip = gs.flip * Math.exp(-dt / 1.5) + flip;
+  }
+  gs.prev = { x: r.x, y: r.y };
+  gs.hold += dt;
+  gs.pull = gs.pull * .97 + Math.min(1, Math.hypot(r.x - P.x, r.y - P.y) / 150) * .03;
+  const flipRate = gs.flip / 1.5;
+  const tw = clamp((Math.sqrt(gs.jit) - 1) / 7 + flipRate / 10, 0, 1);
+  let fm = .4 * Math.min(1, gs.hold / 5) + .3 * (1 - Math.min(1, flipRate / 5)) + .3 * gs.pull;
+  if (gs.pressure != null) fm = fm * .5 + gs.pressure * .5;
+  const rate = Math.min(1, dt * .25);
+  grip.twitch += (tw - grip.twitch) * rate;
+  grip.firm += (clamp(fm, 0, 1) - grip.firm) * rate;
+  if (now - gs.saved > 5) { gs.saved = now; store.set('tb-grip', { firm: +grip.firm.toFixed(3), twitch: +grip.twitch.toFixed(3) }); }
+}
+function gripOf(p) {
+  const g = p.presence && p.presence.gr;
+  return Array.isArray(g) && isFinite(g[0]) ? clamp(+g[0], 0, 1) : .5;
+}
+
+const P = { x: 500, y: 470, vx: 0, vy: 0, rot: 0 };
+const bots = Array.from({ length: 6 }, () => ({
+  dx: 0, dy: 0, a: rand(.55, 1), ph: rand(0, TAU), fr: rand(8, 11), tAng: rand(0, TAU),
+  rogueUntil: 0, rogueKey: null, fx: 0, fy: 0
+}));
+const plan = { word: null, i: 0, words: 0, max: 2, mode: null, pauseUntil: 1.5, soFar: [], nearT: 0 };
+const msg = { tokens: [], last: 0, lang: S.lang };
+const acc = { wind: 0, stillT: 0, T: 0, moodT: {}, lastAng: null };
+const det = { key: null, t: 0, prog: 0, lastReg: null };
+
+/* ---------------- board targets ---------------- */
+let TG = null;
+function buildTargets(lang) {
+  const list = [];
+  const arc = (chars, R, cy, half, size) => {
+    const n = chars.length;
+    chars.forEach((c, i) => {
+      const a = -half + 2 * half * i / (n - 1);
+      list.push({ k: c, x: 500 + R * Math.sin(a), y: cy - R * Math.cos(a), rot: a * .85, size });
+    });
+  };
+  if (lang === 'en') {
+    arc(Array.from('ABCDEFGHIJKLM'), 880, 1110, .47, 66);
+    arc(Array.from('NOPQRSTUVWXYZ'), 760, 1110, .47, 60);
+    Array.from('1234567890').forEach((c, i) => list.push({ k: c, x: 230 + i * 60, y: 545, rot: 0, size: 50 }));
+    list.push({ k: 'YES', x: 200, y: 114, rot: 0, size: 50, big: true });
+    list.push({ k: 'NO', x: 800, y: 114, rot: 0, size: 50, big: true });
+    list.push({ k: 'BYE', x: 500, y: 640, rot: 0, size: 46, big: true });
+  } else {
+    arc(THC.slice(0, 14), 900, 1110, Math.asin(400 / 900), 50);
+    arc(THC.slice(14, 28), 790, 1110, Math.asin(390 / 790), 48);
+    arc(THC.slice(28), 680, 1110, Math.asin(380 / 680), 46);
+    THD.slice(1).concat(THD[0]).forEach((c, i) => list.push({ k: c, x: 230 + i * 60, y: 598, rot: 0, size: 44 }));
+    list.push({ k: 'YES', x: 200, y: 114, rot: 0, size: 46, big: true });
+    list.push({ k: 'NO', x: 800, y: 114, rot: 0, size: 46, big: true });
+    list.push({ k: 'BYE', x: 500, y: 658, rot: 0, size: 38, big: true });
+  }
+  const map = {};
+  for (const t of list) map[t.k] = t;
+  return { list, map };
+}
+
+/* ---------------- wood ---------------- */
+function hash(i, j) {
+  let h = (Math.imul(i, 374761393) + Math.imul(j, 668265263)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967295;
+}
+function vnoise(x, y) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y) { return (vnoise(x, y) * .5 + vnoise(x * 2, y * 2) * .25 + vnoise(x * 4, y * 4) * .125) / .875; }
+function makeWood(w, h, light, dark, seed) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'), im = g.createImageData(w, h), d = im.data;
+  let o = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const n = fbm(x / 240 + seed, y / 36);
+      const f = vnoise(x / 7 + seed, y / 1.3);
+      const bend = Math.sin(x / 310 + n * 3) * 24;
+      const ring = Math.sin((y + bend) / 6.5 + n * 10) * .5 + .5;
+      const v = clamp(Math.pow(ring, 2.4) * .5 + n * .38 + f * .16, 0, 1);
+      d[o] = lerp(light[0], dark[0], v); d[o + 1] = lerp(light[1], dark[1], v); d[o + 2] = lerp(light[2], dark[2], v); d[o + 3] = 255;
+      o += 4;
+    }
+  }
+  g.putImageData(im, 0, 0);
+  return c;
+}
+
+/* ---------------- canvas ---------------- */
+const cv = $('#board'), ctx = cv.getContext('2d');
+let k = 1, bc = document.createElement('canvas'), wood = null, pWood = null, pPattern = null;
+const INK = 'rgba(26,12,3,.9)', INSET = 'rgba(255,228,180,.3)';
+const FONT_EN = '"IM Fell English SC", "IM Fell English", Georgia, serif';
+const FONT_TH = '"Chonburi", "Sarabun", Tahoma, serif';
+
+function rrect(g, x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+}
+function inked(g, text, x, y, size, font, rot, spacing) {
+  g.save(); g.translate(x, y); g.rotate(rot || 0);
+  g.font = `${size}px ${font}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  if ('letterSpacing' in g) g.letterSpacing = (spacing || 0) + 'px';
+  g.fillStyle = INSET; g.fillText(text, 0, 1.8);
+  g.fillStyle = INK; g.fillText(text, 0, 0);
+  g.restore();
+}
+function star(g, x, y, r) {
+  g.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * .32 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  g.closePath(); g.fill();
+}
+function buildBoard() {
+  if (!cv.width) return;
+  bc.width = cv.width; bc.height = cv.height;
+  const g = bc.getContext('2d');
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  if (!wood) wood = makeWood(1200, 864, [200, 140, 80], [108, 60, 26], 0);
+  g.drawImage(wood, 0, 0, bc.width, bc.height);
+  g.setTransform(k, 0, 0, k, 0, 0);
+  const gr = g.createRadialGradient(500, 330, 60, 500, 360, 660);
+  gr.addColorStop(0, 'rgba(255,228,175,.18)'); gr.addColorStop(.55, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(35,14,2,.55)');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.strokeStyle = INK; g.lineWidth = 4; rrect(g, 24, 24, W - 48, H - 48, 34); g.stroke();
+  g.lineWidth = 1.4; rrect(g, 34, 34, W - 68, H - 68, 26); g.stroke();
+  g.strokeStyle = INSET; g.lineWidth = 1; rrect(g, 25.5, 26.5, W - 48, H - 48, 34); g.stroke();
+  // sun
+  g.fillStyle = INK;
+  g.beginPath(); g.arc(98, 112, 27, 0, TAU); g.fill();
+  for (let i = 0; i < 16; i++) {
+    const a = i * TAU / 16, r2 = i % 2 ? 44 : 54;
+    g.beginPath(); g.moveTo(98 + Math.cos(a - .09) * 31, 112 + Math.sin(a - .09) * 31);
+    g.lineTo(98 + Math.cos(a) * r2, 112 + Math.sin(a) * r2);
+    g.lineTo(98 + Math.cos(a + .09) * 31, 112 + Math.sin(a + .09) * 31); g.fill();
+  }
+  g.strokeStyle = INSET; g.lineWidth = 1.2; g.beginPath(); g.arc(98, 112, 19, 0, TAU); g.stroke();
+  // moon
+  g.save(); g.beginPath(); g.arc(902, 112, 32, 0, TAU); g.clip();
+  g.beginPath(); g.arc(902, 112, 32, 0, TAU); g.arc(918, 100, 28, 0, TAU); g.fillStyle = INK; g.fill('evenodd');
+  g.restore();
+  g.fillStyle = INK; star(g, 940, 150, 7); star(g, 866, 62, 5); star(g, 58, 176, 5);
+  // title
+  const L = T[S.lang];
+  inked(g, L.boardTitle, 500, 122, S.lang === 'en' ? 24 : 26, S.lang === 'en' ? FONT_EN : FONT_TH, 0, S.lang === 'en' ? 6 : 1);
+  g.fillStyle = INK; star(g, 330, 120, 7); star(g, 670, 120, 7);
+  // letters
+  for (const t of TG.list) {
+    const font = S.lang === 'en' || /[0-9]/.test(t.k) ? FONT_EN : FONT_TH;
+    const text = t.big ? L[t.k] : t.k;
+    inked(g, text, t.x, t.y, t.size, t.big ? (S.lang === 'en' ? FONT_EN : FONT_TH) : font, t.rot, t.big && S.lang === 'en' ? 3 : 0);
+  }
+  const bye = TG.map.BYE;
+  g.fillStyle = INK; star(g, bye.x - 170, bye.y, 6); star(g, bye.x + 170, bye.y, 6);
+  // corner flourishes
+  for (const [x, y] of [[70, 660], [930, 660]]) { star(g, x, y, 9); }
+}
+
+function resize() {
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(320, Math.round(r.width * dpr));
+  if (w === cv.width) return;
+  cv.width = w; cv.height = Math.round(w * H / W); k = w / W;
+  buildBoard();
+}
+
+/* ---------------- planchette ---------------- */
+const LR = 36, MAG = 1.9, PS = 1.3;
+const SLOTS = [[-56, 80], [56, 80], [-68, 48], [68, 48], [-30, 98], [30, 98], [-60, 16]];
+function planchettePath(g) {
+  g.beginPath(); g.moveTo(0, -66);
+  g.bezierCurveTo(30, -44, 76, 4, 72, 50); g.bezierCurveTo(68, 92, 30, 110, 0, 94);
+  g.bezierCurveTo(-30, 110, -68, 92, -72, 50); g.bezierCurveTo(-76, 4, -30, -44, 0, -66);
+  g.closePath();
+}
+function inPlanchette(x, y) {
+  const c = Math.cos(-P.rot), s = Math.sin(-P.rot), dx = x - P.x, dy = y - P.y;
+  const lx = dx * c - dy * s, ly = dx * s + dy * c;
+  return Math.hypot(lx, ly - 26) < 100;
+}
+function fingertip(x, y, fill, ring, alpha) {
+  const ang = Math.atan2(-y, -x);
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.globalAlpha = alpha;
+  const fg = ctx.createLinearGradient(-60, 0, 0, 0);
+  fg.addColorStop(0, 'rgba(0,0,0,0)'); fg.addColorStop(.5, fill); fg.addColorStop(1, fill);
+  ctx.fillStyle = fg; rrect(ctx, -62, -11, 64, 22, 11); ctx.fill();
+  ctx.fillStyle = fill; ctx.beginPath(); ctx.ellipse(0, 0, 15, 11, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.ellipse(4, 0, 7, 6.5, 0, 0, TAU); ctx.fill();
+  if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(0, 0, 15, 11, 0, 0, TAU); ctx.stroke(); }
+  ctx.restore();
+}
+
+/* ---------------- seating ---------------- */
+let room = null, userCap = null, peersSnap = [], names = new Map(), roomLive = false;
+const idOf = p => p.by || p.peer;
+function others() {
+  if (!room) return [];
+  return peersSnap.filter(p => !p.isMe && p.kind === 'viewer' && p.presence && p.presence.v === 1);
+}
+function seating() {
+  const cap = S.hands - 1; // one seat stays a bot
+  const all = others().slice().sort((a, b) => a.peer < b.peer ? -1 : 1);
+  const willing = S.people ? all.filter(p => !excluded.has(idOf(p))) : [];
+  const seated = willing.slice(0, Math.max(0, cap));
+  const waiting = willing.slice(seated.length);
+  const out = all.filter(p => excluded.has(idOf(p)));
+  return { seated, waiting, out, bots: S.hands - seated.length };
+}
+function fingerOf(p) {
+  const f = p.presence && p.presence.f;
+  if (!Array.isArray(f) || f.length !== 2) return null;
+  const x = +f[0], y = +f[1];
+  if (!isFinite(x) || !isFinite(y)) return null;
+  return { x: clamp(x, 0, W), y: clamp(y, 0, H) };
+}
+const hueOf = p => { const h = +(p.presence && p.presence.hue); return isFinite(h) ? ((h % 360) + 360) % 360 : 30; };
+function nameOf(p, i) {
+  const n = p.by && names.get(p.by);
+  return n || `${T[S.lang].someone} ${i + 1}`;
+}
+
+/* ---------------- plan & bots ---------------- */
+function keysOf(e) { return Array.from(e.s); }
+function digitsOf(n) { const s = String(n); return S.lang === 'en' ? Array.from(s) : Array.from(s).map(c => THD[+c]); }
+function qMode(q) {
+  const s = q.trim().toLowerCase();
+  if (!s) return null;
+  if (/[฀-๿]/.test(s)) {
+    if (/ใคร/.test(s)) return 'who';
+    if (/เมื่อไ(ร|หร่)|กี่/.test(s)) return 'when';
+    if (/(ไหม|มั้ย|หรือเปล่า|หรือไม่|ใช่ไหม)\s*\?*$/.test(s)) return 'yn';
+    if (/ที่ไหน|ไหน/.test(s)) return 'where';
+    return null;
+  }
+  if (/^who\b/.test(s)) return 'who';
+  if (/^(when|what time|how long|how many)\b/.test(s)) return 'when';
+  if (/^where\b/.test(s)) return 'where';
+  if (/^(is|are|am|will|would|do|does|did|can|could|should|shall|was|were|have|has|may|must)\b/.test(s)) return 'yn';
+  return null;
+}
+function chooseKeys() {
+  const L = LX[S.lang], m = S.mood === 'still' ? 'gentle' : S.mood;
+  if (plan.words >= plan.max) return ['BYE'];
+  if (plan.words === 0 && plan.mode) {
+    if (plan.mode === 'yn') {
+      if (m === 'circler' && Math.random() < .4) return keysOf(L.maybe);
+      return [Math.random() < .5 ? 'YES' : 'NO'];
+    }
+    if (plan.mode === 'when' && Math.random() < .55) return digitsOf(1 + Math.floor(Math.random() * 12));
+    if (plan.mode === 'who') return keysOf(pick(L.names));
+    if (plan.mode === 'where') return keysOf(pick(L.places));
+    if (plan.mode === 'when') return keysOf(pick(L.when));
+  }
+  return keysOf(pick(Math.random() < .68 ? L[m] : L.core));
+}
+function planTarget(now) {
+  if (now < plan.pauseUntil) return null;
+  if (!plan.word) { plan.word = chooseKeys(); plan.i = 0; plan.soFar = []; plan.nearT = 0; }
+  return plan.word[plan.i] || null;
+}
+function wordDone(now) {
+  plan.words++; plan.word = null; plan.soFar = []; plan.nearT = 0;
+  plan.pauseUntil = now + rand(.3, 1.0);
+}
+function onRegister(key, now) {
+  const exp = plan.word ? plan.word[plan.i] : null;
+  if (key === exp) {
+    plan.i++; plan.soFar.push(key); plan.nearT = 0;
+    if (plan.i >= plan.word.length) wordDone(now);
+    return;
+  }
+  if (key === 'YES' || key === 'NO') { wordDone(now); return; }
+  if (key === 'BYE') return;
+  if (Math.random() < .6) {
+    const all = LX[S.lang].all;
+    const pre = plan.soFar.concat([key]).join('');
+    let c = all.filter(e => e.s.startsWith(pre) && e.s.length > pre.length);
+    if (c.length) { plan.word = keysOf(pick(c)); plan.i = pre.length; plan.soFar = Array.from(pre); plan.nearT = 0; return; }
+    c = all.filter(e => e.s.startsWith(key) && e.s.length > 1);
+    if (c.length) { plan.word = keysOf(pick(c)); plan.i = 1; plan.soFar = [key]; plan.nearT = 0; }
+  }
+}
+
+/* ---------------- physics ---------------- */
+const G = 900, KH = 16, FH = 2.2 * G, MU_S = 380, MU_K = 250, DAMP = 4.5, SIG = .87 * G, TREM = .12 * G;
+function step(dt, now, seat) {
+  let Fx = 0, Fy = 0;
+  const hands = [];
+  if (S.finger) hands.push({ x: S.finger.x, y: S.finger.y, firm: grip.firm });
+  for (const p of seat.seated) { const f = fingerOf(p); if (f) { f.firm = gripOf(p); hands.push(f); } }
+  for (const h of hands) {
+    const kh = KH * lerp(.7, 1.4, h.firm), fh = FH * lerp(.75, 1.3, h.firm);
+    let fx = kh * (h.x - P.x), fy = kh * (h.y - P.y);
+    const m = Math.hypot(fx, fy);
+    if (m > fh) { fx *= fh / m; fy *= fh / m; }
+    Fx += fx; Fy += fy;
+  }
+  if (!S.lifted) {
+    const key = planTarget(now);
+    for (let i = 0; i < seat.bots; i++) {
+      const b = bots[i];
+      if (Math.random() < dt * .07) { b.rogueUntil = now + rand(.8, 2.4); b.rogueKey = pick(TG.list).k; }
+      const tk = b.rogueUntil > now ? b.rogueKey : key;
+      const sq = Math.sqrt(dt);
+      b.dx += (-b.dx / .8) * dt + SIG * sq * gauss();
+      b.dy += (-b.dy / .8) * dt + SIG * sq * gauss();
+      let fx = b.dx, fy = b.dy;
+      const tg = tk && TG.map[tk];
+      if (tg) {
+        const dx = tg.x - P.x, dy = tg.y - P.y, d = Math.hypot(dx, dy) || 1, rr = radius(tg) * .9;
+        const near = d < rr;
+        const s = b.a * G * (near ? d / rr : Math.min(1, d / 80));
+        if (near) { fx *= .3; fy *= .3; }
+        fx += dx / d * s; fy += dy / d * s;
+      }
+      b.ph += TAU * b.fr * dt; b.tAng += dt * .7;
+      const tr = TREM * Math.sin(b.ph);
+      fx += Math.cos(b.tAng) * tr; fy += Math.sin(b.tAng) * tr;
+      b.fx = fx; b.fy = fy;
+      Fx += fx; Fy += fy;
+    }
+  }
+  const Fm = Math.hypot(Fx, Fy), vm = Math.hypot(P.vx, P.vy);
+  if (vm < 5 && Fm < MU_S) { P.vx = 0; P.vy = 0; }
+  else {
+    const ax = Fx - DAMP * P.vx - (vm > 0 ? MU_K * P.vx / vm : 0);
+    const ay = Fy - DAMP * P.vy - (vm > 0 ? MU_K * P.vy / vm : 0);
+    P.vx += ax * dt; P.vy += ay * dt;
+    const v2 = Math.hypot(P.vx, P.vy);
+    if (v2 > 1000) { P.vx *= 1000 / v2; P.vy *= 1000 / v2; }
+  }
+  P.x += P.vx * dt; P.y += P.vy * dt;
+  if (P.x < 70) { P.x = 70; P.vx *= -.2; } if (P.x > 930) { P.x = 930; P.vx *= -.2; }
+  if (P.y < 70) { P.y = 70; P.vy *= -.2; } if (P.y > 680) { P.y = 680; P.vy *= -.2; }
+  P.rot += (clamp(P.vx / 1600, -.35, .35) - P.rot) * Math.min(1, dt * 3);
+}
+
+/* ---------------- letter detection ---------------- */
+const U = () => (S.sens - 1) / 9;
+function radius(t) { const r0 = lerp(24, 44, U()); return t.big ? r0 + 22 : r0; }
+function detect(dt, now) {
+  const u = U(), dwell = lerp(1.1, .1, u) * lerp(1.2, .8, grip.firm), vthr = lerp(25, 260, u) * (1 + 1.2 * grip.twitch);
+  let found = null, fd = 1e9;
+  for (const t of TG.list) {
+    const rr = radius(t), d = Math.hypot(t.x - P.x, t.y - P.y);
+    if (d < rr && d / rr < fd) { fd = d / rr; found = t; }
+  }
+  if (det.lastReg) {
+    const t = TG.map[det.lastReg];
+    if (!t || Math.hypot(t.x - P.x, t.y - P.y) > radius(t) * 1.35) det.lastReg = null;
+  }
+  const sp = Math.hypot(P.vx, P.vy);
+  if (found && found.k !== det.lastReg) {
+    if (found.k !== det.key) { det.key = found.k; det.t = 0; }
+    if (sp < vthr) det.t += dt; else det.t = Math.max(0, det.t - dt * .5);
+    det.prog = Math.min(1, det.t / dwell);
+    if (det.t >= dwell) { register(found.k, now); det.lastReg = found.k; det.t = 0; det.prog = 0; }
+  } else { det.key = null; det.t = 0; det.prog = 0; }
+  // bots give up on a letter that will not land
+  const exp = plan.word && plan.word[plan.i], et = exp && TG.map[exp];
+  if (et && Math.hypot(et.x - P.x, et.y - P.y) < radius(et)) {
+    plan.nearT += dt;
+    if (plan.nearT > 2.6) { plan.i++; plan.nearT = 0; if (plan.i >= plan.word.length) wordDone(now); }
+  } else plan.nearT = 0;
+}
+function register(key, now) {
+  if (!msg.tokens.length) msg.lang = S.lang;
+  msg.tokens.push(key); msg.last = now;
+  S.bufDirty = true;
+  onRegister(key, now);
+  if (key === 'BYE') closeMessage(now);
+  renderLive();
+}
+
+/* ---------------- mood ---------------- */
+const trail = [];
+const moodEMA = { gentle: 0, restless: 0, hasty: 0, circler: 0, shy: 0 };
+function computeMood() {
+  if (trail.length < 10) return;
+  let L = 0, turn = 0, wind = 0, still = 0, prevA = null;
+  for (let i = 1; i < trail.length; i++) {
+    const a = trail[i - 1], b = trail[i], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), dt = (b.t - a.t) || 1e-3;
+    L += d;
+    if (d / dt < 20) still++;
+    if (d > 1.5) {
+      const ang = Math.atan2(dy, dx);
+      if (prevA !== null) { let da = ang - prevA; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU; turn += Math.abs(da); wind += da; }
+      prevA = ang;
+    }
+  }
+  const n = trail.length - 1, Tt = (trail[n].t - trail[0].t) || 1, sp = L / Tt;
+  const D = Math.hypot(trail[n].x - trail[0].x, trail[n].y - trail[0].y), str = L > 1 ? D / L : 0;
+  const stillF = still / n, turnPer = L > 20 ? turn / (L / 100) : 0, circ = Math.abs(wind) / TAU;
+  const sc = {
+    gentle: stillF * (1 - Math.min(1, sp / 160)),
+    shy: (L > 8 && L < 90 ? .85 : 0) * (1 - stillF * .3),
+    hasty: Math.min(1, sp / 320) * str * 1.25,
+    restless: Math.min(1, turnPer / 2.2) * Math.min(1, sp / 110),
+    circler: Math.min(1.3, circ / 1.1)
+  };
+  let best = 'gentle', bv = -1;
+  for (const m of MOODS) { moodEMA[m] = moodEMA[m] * .7 + sc[m] * .3; if (moodEMA[m] > bv) { bv = moodEMA[m]; best = m; } }
+  S.mood = L < 8 ? 'still' : best;
+}
+function accumulate(dt) {
+  acc.T += dt;
+  const sp = Math.hypot(P.vx, P.vy);
+  if (sp < 20) acc.stillT += dt;
+  if (sp > 30) {
+    const ang = Math.atan2(P.vy, P.vx);
+    if (acc.lastAng !== null) { let da = ang - acc.lastAng; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU; acc.wind += da; }
+    acc.lastAng = ang;
+  }
+  acc.moodT[S.mood] = (acc.moodT[S.mood] || 0) + dt;
+}
+
+/* ---------------- messages ---------------- */
+function closeMessage(now) {
+  if (msg.tokens.length) {
+    let m = S.mood, mv = -1;
+    for (const [kk, v] of Object.entries(acc.moodT)) if (kk !== 'still' && v > mv) { mv = v; m = kk; }
+    const seat = seating();
+    const e = {
+      id: Math.random().toString(36).slice(2, 10), t: Date.now(), lang: msg.lang,
+      tok: msg.tokens.slice(0, 80), q: S.qText.slice(0, 120), m,
+      c: Math.floor(Math.abs(acc.wind) / TAU), st: Math.round(100 * acc.stillT / Math.max(.001, acc.T)),
+      h: S.lifted ? seat.seated.length : S.hands, p: seat.seated.length
+    };
+    S.log = S.log.filter(x => !x.ex);
+    S.log.unshift(e);
+    if (S.log.length > 200) S.log.length = 200;
+    store.set('tb-log', S.log);
+    renderLog();
+  }
+  msg.tokens = []; S.bufDirty = true;
+  S.qText = '';
+  plan.mode = null; plan.words = 0; plan.word = null; plan.soFar = []; plan.max = 1 + Math.floor(Math.random() * 3);
+  plan.pauseUntil = now + rand(5, 9);
+  acc.wind = 0; acc.stillT = 0; acc.T = 0; acc.moodT = {};
+  renderLive();
+}
+function handleQuestion(text, now) {
+  closeMessage(now);
+  S.qText = text;
+  plan.mode = qMode(text);
+  plan.words = 0; plan.word = null;
+  plan.max = plan.mode === 'yn' ? (Math.random() < .45 ? 2 : 1) : 1 + Math.floor(Math.random() * 2);
+  plan.pauseUntil = now + .6;
+  renderLive();
+}
+
+/* ---------------- reading ---------------- */
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+function segment(s, lang) {
+  const lex = LX[lang].all, n = s.length;
+  const dp = new Array(n + 1).fill(-1e9), bp = new Array(n + 1);
+  dp[0] = 0;
+  for (let i = 0; i < n; i++) {
+    if (dp[i] < -1e8) continue;
+    if (dp[i] - 1 > dp[i + 1]) { dp[i + 1] = dp[i] - 1; bp[i + 1] = { i }; }
+    for (const e of lex) {
+      const kk = e.s.length, tol = kk <= 3 ? 0 : kk <= 6 ? 1 : 2;
+      for (let L = Math.max(2, kk - tol); L <= kk + tol && i + L <= n; L++) {
+        const sub = s.substr(i, L);
+        const d = sub === e.s ? 0 : lev(sub, e.s);
+        if (d > tol) continue;
+        const sc = dp[i] + 2 * kk - 2.5 * d - (kk === 2 ? 1.5 : 0);
+        if (sc > dp[i + L]) { dp[i + L] = sc; bp[i + L] = { i, e }; }
+      }
+    }
+  }
+  const out = [];
+  for (let j = n; j > 0;) {
+    const b = bp[j];
+    if (b.e) out.push({ kind: 'word', w: b.e.w, raw: Array.from(s.slice(b.i, j)) });
+    else out.push({ kind: 'noise', raw: [s[b.i]] });
+    j = b.i;
+  }
+  return out.reverse();
+}
+const isDigit = c => /[0-9๐-๙]/.test(c);
+const readCache = new Map();
+function reading(e) {
+  if (readCache.has(e.id)) return readCache.get(e.id);
+  const parts = [];
+  let run = [];
+  const flush = () => {
+    let i = 0;
+    while (i < run.length) {
+      const d = isDigit(run[i]);
+      let j = i; while (j < run.length && isDigit(run[j]) === d) j++;
+      const chunk = run.slice(i, j);
+      if (d) parts.push({ kind: 'num', raw: chunk });
+      else parts.push(...segment(chunk.join(''), e.lang));
+      i = j;
+    }
+    run = [];
+  };
+  for (const t of e.tok) {
+    if (t === 'YES' || t === 'NO' || t === 'BYE') { flush(); parts.push({ kind: 'sp', k: t }); }
+    else if (typeof t === 'string') run.push(t);
+  }
+  flush();
+  readCache.set(e.id, parts);
+  return parts;
+}
+
+/* ---------------- rendering: DOM ---------------- */
+const L_ = () => T[S.lang];
+function applyStrings() {
+  const L = L_();
+  document.documentElement.lang = S.lang;
+  document.querySelectorAll('[data-t]').forEach(el => { const v = L[el.dataset.t]; if (typeof v === 'string') el.textContent = v; });
+  $('#q').placeholder = L.qph;
+  $('#peopleBtn').textContent = S.people ? L.peopleOn : L.peopleOff;
+  $('#peopleBtn').setAttribute('aria-pressed', String(S.people));
+  $('#liftBtn').textContent = S.lifted ? L.place : L.lift;
+  $('#liftBtn').setAttribute('aria-pressed', String(S.lifted));
+  document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
+  $('#explainEn').hidden = S.lang !== 'en';
+  $('#explainTh').hidden = S.lang !== 'th';
+  cv.setAttribute('aria-label', S.lang === 'en'
+    ? 'Talking board. Press and drag to move the planchette; arrow keys also move it.'
+    : 'กระดานวิญญาณ กดแล้วลากเพื่อเลื่อนแผ่นชี้ หรือใช้ปุ่มลูกศร');
+  renderKnobs(); renderLive(); renderLog(); renderSeats(true);
+}
+function renderKnobs() {
+  const box = $('#knobs');
+  box.textContent = '';
+  for (let n = 1; n <= 6; n++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = String(n); b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', String(n === S.hands));
+    b.tabIndex = n === S.hands ? 0 : -1;
+    b.addEventListener('click', () => { S.hands = n; store.set('tb-hands', n); renderKnobs(); renderSeats(true); box.querySelector('[aria-checked="true"]').focus(); });
+    b.addEventListener('keydown', ev => {
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowUp') { ev.preventDefault(); if (S.hands < 6) box.children[S.hands].click(); }
+      if (ev.key === 'ArrowLeft' || ev.key === 'ArrowDown') { ev.preventDefault(); if (S.hands > 1) box.children[S.hands - 2].click(); }
+    });
+    box.appendChild(b);
+  }
+}
+function tokText(t, lang) { return (t === 'YES' || t === 'NO' || t === 'BYE') ? T[lang][t] : t; }
+function renderLive() {
+  const el = $('#letters');
+  const tk = msg.tokens;
+  el.textContent = tk.length ? tk.map(t => tokText(t, msg.lang)).join(' ') : '…';
+  const a = $('#asked');
+  a.textContent = S.qText ? `${L_().asked}: “${S.qText}”` : '';
+}
+let seatSig = '';
+function renderSeats(force) {
+  const L = L_(), seat = seating();
+  const sig = [S.lang, S.hands, S.people, S.lifted, seat.seated.map(p => p.peer + (names.get(p.by) || '')).join(','),
+    seat.waiting.map(p => p.peer).join(','), seat.out.map(p => p.peer).join(','), roomLive].join('|');
+  if (!force && sig === seatSig) return updateSeatBufs(seat);
+  seatSig = sig;
+  const ul = $('#seats');
+  ul.textContent = '';
+  const add = (cls, no, who, kind, color, btn) => {
+    const li = document.createElement('li'); li.className = 'seat ' + cls;
+    const top = document.createElement('span'); top.className = 'no'; top.textContent = `${L.seat} ${no}`;
+    const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = color; top.appendChild(dot);
+    const w = document.createElement('span'); w.className = 'who'; w.textContent = who;
+    const kd = document.createElement('span'); kd.className = 'kind'; kd.textContent = kind;
+    li.append(top, w, kd);
+    const buf = document.createElement('span'); buf.className = 'buf'; li.appendChild(buf);
+    if (btn) li.appendChild(btn);
+    ul.appendChild(li);
+    return li;
+  };
+  add('you', ROMAN[0], L.youName, L.you, `hsl(${S.hue} 60% 50%)`);
+  const all = others().slice().sort((a, b) => a.peer < b.peer ? -1 : 1);
+  seat.seated.forEach((p, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = L.sitOut;
+    b.addEventListener('click', () => { excluded.add(idOf(p)); renderSeats(true); });
+    const li = add('person', ROMAN[i + 1], nameOf(p, all.indexOf(p)), L.person, `hsl(${hueOf(p)} 60% 50%)`, b);
+    li.dataset.peer = p.peer;
+  });
+  const botNames = BOTS[S.lang];
+  for (let i = 0; i < seat.bots; i++) {
+    add('bot', ROMAN[seat.seated.length + i + 1], botNames[i], S.lifted ? `${L.bot} · ${L.lift.toLowerCase()}` : L.bot, 'repeating-linear-gradient(90deg,#8a7350 0 2px,#c9b58e 2px 4px)');
+  }
+  const wEl = $('#watch');
+  wEl.textContent = '';
+  const rail = seat.waiting.concat(seat.out).concat(S.people ? [] : all.filter(p => !excluded.has(idOf(p))));
+  if (rail.length) {
+    const lb = document.createElement('span'); lb.textContent = L.rail; wEl.appendChild(lb);
+    for (const p of rail) {
+      const sp = document.createElement('span'); sp.className = 'p';
+      const dot = document.createElement('span'); dot.className = 'dot';
+      dot.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;background:hsl(${hueOf(p)} 60% 50%)`;
+      const nm = document.createElement('span');
+      const isOut = excluded.has(idOf(p));
+      nm.textContent = `${nameOf(p, all.indexOf(p))} (${isOut ? L.sittingOut : L.waiting})`;
+      sp.append(dot, nm);
+      if (isOut) {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = L.dealIn;
+        b.addEventListener('click', () => { excluded.delete(idOf(p)); renderSeats(true); });
+        sp.appendChild(b);
+      }
+      wEl.appendChild(sp);
+    }
+  }
+  updateSeatBufs(seat);
+}
+function updateSeatBufs(seat) {
+  const ul = $('#seats');
+  const mine = ul.querySelector('.seat.you .buf');
+  if (mine) mine.textContent = msg.tokens.slice(-10).map(t => tokText(t, msg.lang)).join(' ');
+  for (const p of seat.seated) {
+    const el = ul.querySelector(`.seat[data-peer="${CSS.escape(p.peer)}"] .buf`);
+    if (!el) continue;
+    const b = p.presence.buf;
+    el.textContent = Array.isArray(b) ? b.slice(-10).filter(t => typeof t === 'string' && t.length <= 4).map(t => tokText(t, S.lang)).join(' ') : '';
+  }
+}
+function renderLog() {
+  const ol = $('#log'), L = L_();
+  ol.textContent = '';
+  if (!S.log.length) {
+    const li = document.createElement('li'); li.className = 'empty'; li.textContent = L.empty; ol.appendChild(li); return;
+  }
+  for (const e of S.log) {
+    const EL = T[e.lang] || T.en;
+    const li = document.createElement('li'); li.className = 'entry';
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const time = new Date(e.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    meta.textContent = `${time} · ${L.meta(e.h | 0, e.p | 0)}`;
+    if (e.ex) { const s = document.createElement('span'); s.className = 'stamp'; s.textContent = L.example; meta.appendChild(s); }
+    li.appendChild(meta);
+    if (e.q) { const q = document.createElement('p'); q.className = 'q'; q.textContent = `${L.asked}: “${e.q}”`; li.appendChild(q); }
+    const parts = reading(e);
+    const words = parts.filter(p => p.kind !== 'noise').map(p => p.kind === 'word' ? p.w : p.kind === 'num' ? p.raw.join('') : EL[p.k]);
+    const rd = document.createElement('p'); rd.className = 'reading';
+    if (words.length) rd.textContent = words.join(' · ');
+    else { rd.textContent = L.noWords; rd.classList.add('none'); }
+    li.appendChild(rd);
+    const raw = document.createElement('p'); raw.className = 'raw';
+    parts.forEach((p, i) => {
+      if (i) raw.appendChild(document.createTextNode(' '));
+      const sp = document.createElement('span');
+      if (p.kind === 'sp') { sp.className = 'sp'; sp.textContent = EL[p.k]; }
+      else { sp.textContent = p.raw.join(''); if (p.kind === 'noise') sp.className = 'n'; }
+      raw.appendChild(sp);
+    });
+    li.appendChild(raw);
+    const md = document.createElement('p'); md.className = 'mood';
+    md.textContent = `${(L.moodLine[e.m] || L.moodLine.gentle)} · ${L.style(e.c | 0, e.st | 0)}`;
+    li.appendChild(md);
+    ol.appendChild(li);
+  }
+}
+function updateGrip() {
+  $('#firmBar').style.width = Math.round(grip.firm * 100) + '%';
+  $('#twitchBar').style.width = Math.round(grip.twitch * 100) + '%';
+  $('#gripWord').textContent = L_().gripWord(grip.firm, grip.twitch);
+}
+function updateGauge() {
+  const i = MOODS.indexOf(S.mood);
+  const deg = i < 0 ? -88 : -72 + i * 36;
+  $('#needle').style.transform = `rotate(${deg}deg)`;
+  $('#moodWord').textContent = L_().moods[S.mood];
+}
+
+/* ---------------- drawing ---------------- */
+function draw(now, seat) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(bc, 0, 0);
+  ctx.setTransform(k, 0, 0, k, 0, 0);
+  // letter warming as it collects
+  if (det.key && det.prog > .02) {
+    const t = TG.map[det.key];
+    if (t) {
+      const r = radius(t) * 1.4, g = ctx.createRadialGradient(t.x, t.y, 0, t.x, t.y, r);
+      g.addColorStop(0, `rgba(255,214,140,${.5 * det.prog})`); g.addColorStop(1, 'rgba(255,214,140,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(t.x, t.y, r, 0, TAU); ctx.fill();
+    }
+  }
+  // pull threads from people
+  const people = seat.seated.map(p => ({ f: fingerOf(p), hue: hueOf(p) }));
+  if (S.finger) people.unshift({ f: S.finger, hue: S.hue, me: true });
+  for (const h of people) {
+    if (!h.f) continue;
+    ctx.strokeStyle = `hsla(${h.hue},70%,70%,.45)`; ctx.lineWidth = 1.5; ctx.setLineDash([4, 6]);
+    ctx.beginPath(); ctx.moveTo(P.x, P.y); ctx.lineTo(h.f.x, h.f.y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = `hsla(${h.hue},70%,60%,.7)`; ctx.beginPath(); ctx.arc(h.f.x, h.f.y, 6, 0, TAU); ctx.fill();
+  }
+  // planchette body
+  ctx.save(); ctx.translate(P.x, P.y); ctx.rotate(P.rot); ctx.scale(PS, PS);
+  // felt feet
+  ctx.fillStyle = 'rgba(20,8,0,.55)';
+  for (const [fx, fy] of [[-54, 78], [54, 78], [0, -50]]) { ctx.beginPath(); ctx.arc(fx + 3, fy + 5, 9, 0, TAU); ctx.fill(); }
+  ctx.save();
+  ctx.shadowColor = 'rgba(20,8,0,.6)'; ctx.shadowBlur = 18 * k; ctx.shadowOffsetX = 7 * k; ctx.shadowOffsetY = 13 * k;
+  planchettePath(ctx);
+  const bg = ctx.createLinearGradient(-70, -60, 70, 110);
+  bg.addColorStop(0, '#f4e2ba'); bg.addColorStop(.45, '#d8b47c'); bg.addColorStop(1, '#9c6a35');
+  ctx.fillStyle = bg; ctx.fill();
+  ctx.restore();
+  if (pPattern) { ctx.save(); planchettePath(ctx); ctx.clip(); ctx.globalAlpha = .28; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = pPattern; ctx.fillRect(-80, -70, 160, 180); ctx.restore(); }
+  planchettePath(ctx); ctx.lineWidth = 2.6; ctx.strokeStyle = 'rgba(255,248,225,.7)'; ctx.stroke();
+  ctx.lineWidth = 1.6; ctx.strokeStyle = INK; ctx.stroke();
+  // inked border and ornament
+  ctx.save(); ctx.translate(0, 14); ctx.scale(.84, .84); ctx.translate(0, -14);
+  planchettePath(ctx); ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(40,20,6,.75)'; ctx.stroke(); ctx.restore();
+  ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-18, 64); ctx.quadraticCurveTo(0, 51, 18, 64); ctx.quadraticCurveTo(0, 77, -18, 64); ctx.stroke();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(0, 64, 3.6, 0, TAU); ctx.fill();
+  star(ctx, -34, 70, 5); star(ctx, 34, 70, 5);
+  ctx.restore();
+  // lens
+  ctx.save();
+  ctx.beginPath(); ctx.arc(P.x, P.y, LR, 0, TAU); ctx.clip();
+  const sw = 2 * LR / MAG * k;
+  ctx.drawImage(bc, P.x * k - sw / 2, P.y * k - sw / 2, sw, sw, P.x - LR, P.y - LR, 2 * LR, 2 * LR);
+  if (det.key && det.prog > .02) { ctx.fillStyle = `rgba(255,214,140,${.22 * det.prog})`; ctx.fillRect(P.x - LR, P.y - LR, 2 * LR, 2 * LR); }
+  const lg = ctx.createRadialGradient(P.x, P.y, LR * .55, P.x, P.y, LR);
+  lg.addColorStop(0, 'rgba(160,200,210,.05)'); lg.addColorStop(.75, 'rgba(40,60,70,.12)'); lg.addColorStop(1, 'rgba(10,15,20,.55)');
+  ctx.fillStyle = lg; ctx.fillRect(P.x - LR, P.y - LR, 2 * LR, 2 * LR);
+  // hairlines
+  ctx.strokeStyle = 'rgba(30,14,4,.55)'; ctx.lineWidth = .8;
+  ctx.beginPath();
+  ctx.moveTo(P.x - LR, P.y); ctx.lineTo(P.x - 5, P.y); ctx.moveTo(P.x + 5, P.y); ctx.lineTo(P.x + LR, P.y);
+  ctx.moveTo(P.x, P.y - LR); ctx.lineTo(P.x, P.y - 5); ctx.moveTo(P.x, P.y + 5); ctx.lineTo(P.x, P.y + LR);
+  ctx.stroke();
+  // glare
+  const gl = ctx.createLinearGradient(P.x - LR, P.y - LR, P.x + LR * .2, P.y + LR * .2);
+  gl.addColorStop(0, 'rgba(255,255,255,.34)'); gl.addColorStop(.45, 'rgba(255,255,255,.08)'); gl.addColorStop(.46, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gl; ctx.fillRect(P.x - LR, P.y - LR, 2 * LR, 2 * LR);
+  ctx.restore();
+  // bezel
+  const ring = ctx.createLinearGradient(P.x - LR, P.y - LR, P.x + LR, P.y + LR);
+  ring.addColorStop(0, '#fbe8ad'); ring.addColorStop(.45, '#c09743'); ring.addColorStop(1, '#4f380b');
+  ctx.strokeStyle = ring; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(P.x, P.y, LR + 3.5, 0, TAU); ctx.stroke();
+  ctx.strokeStyle = 'rgba(25,12,2,.9)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(P.x, P.y, LR + 7.8, 0, TAU); ctx.stroke();
+  ctx.beginPath(); ctx.arc(P.x, P.y, LR - .2, 0, TAU); ctx.stroke();
+  for (let i = 0; i < 4; i++) {
+    const a = P.rot + Math.PI / 4 + i * Math.PI / 2, sx = P.x + Math.cos(a) * (LR + 3.5), sy = P.y + Math.sin(a) * (LR + 3.5);
+    ctx.fillStyle = '#5a400e'; ctx.beginPath(); ctx.arc(sx, sy, 2.2, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#f7e3a6'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(sx - 1.5, sy); ctx.lineTo(sx + 1.5, sy); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(P.x, P.y, LR - 5, Math.PI * 1.08, Math.PI * 1.42); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(P.x, P.y, LR - 5, Math.PI * .08, Math.PI * .22); ctx.stroke();
+  // fingertips
+  ctx.save(); ctx.translate(P.x, P.y); ctx.rotate(P.rot); ctx.scale(PS, PS);
+  let slot = 0;
+  if (!S.lifted) {
+    for (let i = 0; i < seat.bots && slot < SLOTS.length; i++, slot++) {
+      const b = bots[i], s = SLOTS[slot];
+      fingertip(s[0] + clamp(b.fx / G, -1.5, 1.5) * 2, s[1] + clamp(b.fy / G, -1.5, 1.5) * 2, 'rgba(228,236,250,.85)', null, .5);
+    }
+  }
+  for (const h of people) {
+    if (!h.f || slot >= SLOTS.length) continue;
+    const s = SLOTS[slot++];
+    fingertip(s[0], s[1], 'rgba(234,194,160,1)', `hsl(${h.hue},65%,50%)`, .95);
+  }
+  ctx.restore();
+}
+
+/* ---------------- input ---------------- */
+function toBoard(e) {
+  const r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+}
+let hintGone = false;
+function dropHint() { if (!hintGone) { hintGone = true; $('#hint').classList.add('gone'); } }
+cv.addEventListener('pointerdown', e => {
+  if (e.button && e.button !== 0) return;
+  const b = toBoard(e);
+  try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+  S.grab = inPlanchette(b.x, b.y) ? { dx: b.x - P.x, dy: b.y - P.y } : { dx: 0, dy: 0 };
+  S.raw = { x: b.x - S.grab.dx, y: b.y - S.grab.dy };
+  S.finger = { x: S.raw.x, y: S.raw.y }; S.fingerFromPointer = true;
+  gs.pressure = e.pointerType !== 'mouse' && e.pressure > 0 && e.pressure !== .5 ? e.pressure : null;
+  S.pointerId = e.pointerId;
+  cv.classList.add('held'); dropHint();
+  e.preventDefault();
+});
+cv.addEventListener('pointermove', e => {
+  if (!S.raw || e.pointerId !== S.pointerId) return;
+  const b = toBoard(e);
+  S.raw = { x: clamp(b.x - S.grab.dx, 0, W), y: clamp(b.y - S.grab.dy, 0, H) };
+  if (e.pointerType !== 'mouse' && e.pressure > 0 && e.pressure !== .5) gs.pressure = e.pressure;
+});
+const release = e => { if (e.pointerId !== S.pointerId) return; S.finger = null; S.raw = null; S.fingerFromPointer = false; S.pointerId = null; cv.classList.remove('held'); };
+cv.addEventListener('pointerup', release);
+cv.addEventListener('pointercancel', release);
+const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+cv.addEventListener('keydown', e => { if (ARROWS[e.key]) { S.keys.add(e.key); e.preventDefault(); dropHint(); } });
+cv.addEventListener('keyup', e => { if (ARROWS[e.key]) S.keys.delete(e.key); });
+cv.addEventListener('blur', () => S.keys.clear());
+function keyFinger() {
+  if (!S.keys.size || S.pointerId != null) { if (S.keyHeld) { S.finger = null; S.keyHeld = false; } return; }
+  let dx = 0, dy = 0;
+  for (const kk of S.keys) { dx += ARROWS[kk][0]; dy += ARROWS[kk][1]; }
+  S.finger = { x: P.x + dx * 90, y: P.y + dy * 90 }; S.keyHeld = true; S.fingerFromPointer = false;
+}
+
+document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => {
+  const l = b.dataset.lang === 'th' ? 'th' : 'en';
+  if (l === S.lang) return;
+  closeMessage(performance.now() / 1000);
+  S.lang = l; store.set('tb-lang', l);
+  TG = buildTargets(l); plan.word = null; det.lastReg = null; det.key = null;
+  buildBoard(); applyStrings();
+}));
+$('#sens').value = String(S.sens);
+$('#sens').addEventListener('input', e => { S.sens = clamp(+e.target.value | 0, 1, 10); store.set('tb-sens', S.sens); });
+$('#peopleBtn').addEventListener('click', () => { S.people = !S.people; store.set('tb-people', S.people); applyStrings(); });
+$('#liftBtn').addEventListener('click', () => { S.lifted = !S.lifted; applyStrings(); });
+$('#endBtn').addEventListener('click', () => closeMessage(performance.now() / 1000));
+$('#askForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const text = $('#q').value.trim().slice(0, 120);
+  if (!text) return;
+  $('#q').value = '';
+  if (S.lifted && !REDUCED) { S.lifted = false; applyStrings(); }
+  handleQuestion(text, performance.now() / 1000);
+});
+$('#copyBtn').addEventListener('click', () => {
+  const L = L_();
+  const lines = S.log.filter(e => !e.ex).map(e => {
+    const parts = reading(e), EL = T[e.lang] || T.en;
+    const words = parts.filter(p => p.kind !== 'noise').map(p => p.kind === 'word' ? p.w : p.kind === 'num' ? p.raw.join('') : EL[p.k]);
+    const time = new Date(e.t).toLocaleString();
+    return `${time}${e.q ? `  ${L.asked}: ${e.q}` : ''}\n  ${words.join(' ') || L.noWords}   [${e.tok.map(t => tokText(t, e.lang)).join(' ')}]  — ${L.moodLine[e.m] || ''}`;
+  }).join('\n');
+  const btn = $('#copyBtn');
+  const done = () => { btn.textContent = L.copied; setTimeout(() => { btn.textContent = L_().copy; }, 1600); };
+  try {
+    navigator.clipboard.writeText(lines || '').then(done, () => fallbackCopy(lines, done));
+  } catch (err) { fallbackCopy(lines, done); }
+});
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) {}
+  ta.remove();
+}
+$('#clearBtn').addEventListener('click', () => { $('#confirm').hidden = false; $('#clearBtn').hidden = true; });
+$('#clearNo').addEventListener('click', () => { $('#confirm').hidden = true; $('#clearBtn').hidden = false; });
+$('#clearYes').addEventListener('click', () => {
+  S.log = []; store.set('tb-log', S.log); renderLog();
+  $('#confirm').hidden = true; $('#clearBtn').hidden = false;
+});
+
+/* ---------------- room ---------------- */
+let lastPres = 0, sentBuf = '';
+function tickPresence(now) {
+  if (!room || now - lastPres < .066) return;
+  lastPres = now;
+  const patch = {
+    v: 1, hue: S.hue, gr: [+grip.firm.toFixed(2), +grip.twitch.toFixed(2)],
+    f: S.finger ? [Math.round(S.finger.x), Math.round(S.finger.y)] : null
+  };
+  const bs = msg.tokens.slice(-12).join(',');
+  if (bs !== sentBuf) { patch.buf = msg.tokens.slice(-12); sentBuf = bs; }
+  room.presence(patch).catch(() => {});
+}
+async function resolveNames() {
+  if (!userCap) return;
+  const ids = [...new Set(others().map(p => p.by).filter(b => b && !names.has(b)))];
+  if (!ids.length) return;
+  ids.forEach(id => names.set(id, ''));
+  try {
+    const ps = await userCap.profiles(ids);
+    for (const id of ids) { const n = ps && ps[id] && ps[id].name; names.set(id, n || ''); }
+    renderSeats(true);
+  } catch (e) {}
+}
+async function initRoom() {
+  const c = window.claude;
+  if (!c || typeof c.use !== 'function') return;
+  try { room = await c.use('room'); } catch (e) { room = null; }
+  if (!room) return;
+  document.querySelectorAll('.mp').forEach(el => { el.hidden = false; });
+  try { userCap = await c.use('user'); } catch (e) { userCap = null; }
+  room.onPeers(ch => { peersSnap = ch.peers; roomLive = true; resolveNames(); renderSeats(false); },
+    () => { room = null; peersSnap = []; roomLive = false; renderSeats(true); });
+  room.presence({ v: 1, hue: S.hue, f: null, buf: [] }).catch(() => {});
+}
+
+/* ---------------- loop ---------------- */
+let lastT = performance.now() / 1000, lastMood = 0, lastUi = 0;
+let loopErr = 0;
+function frame(ms) {
+  try { tick(ms); } catch (err) { if (loopErr++ < 3) console.error(err); }
+  requestAnimationFrame(frame);
+}
+function tick(ms) {
+  const now = ms / 1000, dt = Math.min(.05, Math.max(0, now - lastT));
+  lastT = now;
+  if (!isFinite(P.x + P.y + P.vx + P.vy + P.rot)) { P.x = 500; P.y = 470; P.vx = P.vy = P.rot = 0; }
+  for (const b of bots) if (!isFinite(b.dx + b.dy)) { b.dx = 0; b.dy = 0; }
+  keyFinger();
+  gripTick(dt, now);
+  const seat = seating();
+  step(dt / 2, now, seat); step(dt / 2, now, seat);
+  detect(dt, now);
+  trail.push({ t: now, x: P.x, y: P.y });
+  while (trail.length && now - trail[0].t > 4) trail.shift();
+  accumulate(dt);
+  if (now - lastMood > .25) { computeMood(); lastMood = now; }
+  if (msg.tokens.length && now - msg.last > 9) closeMessage(now);
+  tickPresence(now);
+  draw(now, seat);
+  if (now - lastUi > .25) { updateGauge(); updateGrip(); renderSeats(false); lastUi = now; }
+}
+
+/* ---------------- boot ---------------- */
+TG = buildTargets(S.lang);
+if (!S.log.length) {
+  const t0 = Date.now() - 1000 * 60 * 7;
+  S.log = S.lang === 'en'
+    ? [
+      { ex: true, id: 'ex2', t: t0 + 180000, lang: 'en', tok: ['YES', 'S', 'O', 'N', 'BYE'], q: 'Will it rain tomorrow?', m: 'hasty', c: 0, st: 14, h: 3, p: 0 },
+      { ex: true, id: 'ex1', t: t0, lang: 'en', tok: ['H', 'E', 'L', 'O', 'Q', 'H', 'O', 'M', 'E'], q: '', m: 'gentle', c: 1, st: 46, h: 3, p: 1 }
+    ]
+    : [
+      { ex: true, id: 'ex2', t: t0 + 180000, lang: 'th', tok: ['YES', 'ร', 'ว', 'BYE'], q: 'พรุ่งนี้ฝนจะตกไหม', m: 'hasty', c: 0, st: 14, h: 3, p: 0 },
+      { ex: true, id: 'ex1', t: t0, lang: 'th', tok: ['ส', 'ว', 'ส', 'ด', 'ข', 'บ', 'น'], q: '', m: 'gentle', c: 1, st: 46, h: 3, p: 1 }
+    ];
+}
+new ResizeObserver(resize).observe(cv);
+resize();
+applyStrings();
+setTimeout(() => {
+  if (!pWood) { pWood = makeWood(160, 180, [150, 90, 50], [60, 28, 10], 7.3); pPattern = ctx.createPattern(pWood, 'repeat'); }
+}, 0);
+if (document.fonts && document.fonts.load) {
+  Promise.all([
+    document.fonts.load('66px "IM Fell English SC"'),
+    document.fonts.load('50px "Chonburi"', 'กขค'),
+    document.fonts.load('16px "Sriracha"')
+  ]).then(buildBoard, buildBoard);
+  document.fonts.ready.then(buildBoard);
+}
+initRoom();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
