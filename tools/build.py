@@ -25,6 +25,7 @@ meta = f"""<meta charset="utf-8">
 <meta property="og:image" content="{URL}card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Card: Talking Board, a wooden parlour board with the alphabet, yes and no, and a panel of messages received">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{URL}card.png">
 <meta name="theme-color" content="#150e0a">
